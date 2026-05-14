@@ -7,9 +7,10 @@
     "dev": "electron-vite dev",
     "build": "electron-vite build",
     "preview": "electron-vite preview",
-    "package": "npm run build && electron-builder",
-    "package:win": "npm run build && electron-builder --win",
-    "package:linux": "npm run build && electron-builder --linux",
+    "create-icons": "node scripts/create-icons.mjs",
+    "package": "npm run build && npm run create-icons && electron-builder",
+    "package:win": "npm run build && npm run create-icons && electron-builder --win",
+    "package:linux": "npm run build && npm run create-icons && electron-builder --linux",
     "lint": "eslint src --ext .ts,.tsx",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
