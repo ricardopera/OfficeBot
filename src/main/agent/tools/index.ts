@@ -15,7 +15,7 @@ import { createCreateReportTool } from './office/createReport';
 import { createGenerateChartTool } from './office/generateChart';
 import { createWebSearchTool } from './web/webSearch';
 
-export function createToolSet(workspacePath: string, approval: ApprovalEngine): ToolSet {
+export function createToolSet(workspacePath: string, approval: ApprovalEngine, tavilyApiKey?: string, braveApiKey?: string): ToolSet {
   return {
     readFile: createReadFileTool(workspacePath),
     writeFile: createWriteFileTool(workspacePath, approval),
@@ -30,6 +30,6 @@ export function createToolSet(workspacePath: string, approval: ApprovalEngine): 
     readPDF: createReadPDFTool(workspacePath),
     createReport: createCreateReportTool(workspacePath, approval),
     generateChart: createGenerateChartTool(workspacePath, approval),
-    webSearch: createWebSearchTool(),
+    webSearch: createWebSearchTool(tavilyApiKey, braveApiKey),
   };
 }

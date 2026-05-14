@@ -1,9 +1,43 @@
 import { tool } from 'ai';
 import { z } from 'zod';
 import { writeFileSync, mkdirSync } from 'fs';
-import { dirname, join } from 'path';
+import { dirname } from 'path';
 import { sanitizePath } from '../../../services/FileSystem';
 import type { ApprovalEngine } from '../../ApprovalEngine';
+
+const htmlTemplate = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; color: #222; }
+    h1 { border-bottom: 2px solid #4f8ef7; padding-bottom: 8px; }
+    h2 { color: #2a5ca8; margin-top: 2rem; }
+    section { margin-bottom: 2rem; }
+    pre { background: #f5f5f5; padding: 12px; border-radius: 6px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h1><%= title %></h1>
+  <% sections.forEach(function(section) { %>
+  <section>
+    <h2><%= section.heading %></h2>
+    <div><%- section.content %></div>
+  </section>
+  <% }); %>
+</body>
+</html>`;
+
+const markdownTemplate = `# <%= title %>
+
+<% sections.forEach(function(section) { %>
+## <%= section.heading %>
+
+<%- section.content %>
+
+<% }); %>`;
 
 export function createCreateReportTool(workspacePath: string, approval: ApprovalEngine) {
   return tool({
@@ -19,27 +53,25 @@ export function createCreateReportTool(workspacePath: string, approval: Approval
     }),
     execute: async ({ outputPath, title, sections, format = 'markdown' }) => {
       const approved = await approval.requestApproval('createReport', { outputPath, title });
-      if (!approved) return { success: false, reason: 'Rejeitado pelo usuário' };
+      if (!approved) return { success: false, reason: 'Rejected by user' };
 
       const safePath = sanitizePath(workspacePath, outputPath);
       mkdirSync(dirname(safePath), { recursive: true });
 
-      let content: string;
-      if (format === 'html') {
-        content = `<!DOCTYPE html>\n<html lang="pt-BR">\n<head><meta charset="UTF-8"><title>${title}</title></head>\n<body>\n<h1>${title}</h1>\n`;
-        for (const section of sections) {
-          content += `<h2>${section.heading}</h2>\n<div>${section.content}</div>\n`;
+      try {
+        let ejs: typeof import('ejs');
+        try {
+          ejs = await import('ejs');
+        } catch {
+          return { success: false, error: 'EJS package not found. Run: npm install ejs' };
         }
-        content += '</body>\n</html>';
-      } else {
-        content = `# ${title}\n\n`;
-        for (const section of sections) {
-          content += `## ${section.heading}\n\n${section.content}\n\n`;
-        }
+        const template = format === 'html' ? htmlTemplate : markdownTemplate;
+        const content = ejs.render(template, { title, sections });
+        writeFileSync(safePath, content, 'utf-8');
+        return { success: true, path: outputPath, format, bytesWritten: Buffer.byteLength(content, 'utf-8') };
+      } catch (err) {
+        return { success: false, error: String(err) };
       }
-
-      writeFileSync(safePath, content, 'utf-8');
-      return { success: true, path: outputPath, format, bytesWritten: Buffer.byteLength(content, 'utf-8') };
     },
   });
 }

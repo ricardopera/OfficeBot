@@ -2,7 +2,7 @@ import Database from 'better-sqlite3';
 import { app } from 'electron';
 import { join } from 'path';
 import { mkdirSync } from 'fs';
-import type { Conversation, Message, AppSettings, LLMProvider } from '@shared/types';
+import type { Conversation, Message, AppSettings, LLMProvider, Memory } from '@shared/types';
 import { SecureStorageService } from './SecureStorage';
 
 export class DatabaseService {
@@ -171,6 +171,36 @@ export class DatabaseService {
 
   deleteProvider(id: string): void {
     this.db.prepare('DELETE FROM providers WHERE id = ?').run(id);
+  }
+
+  // ─── Memories ─────────────────────────────────────────────────────────────
+
+  listMemories(): Memory[] {
+    const rows = this.db.prepare('SELECT * FROM memories ORDER BY updated_at DESC').all() as Record<string, unknown>[];
+    return rows.map(this.mapMemory);
+  }
+
+  saveMemory(mem: Memory): void {
+    this.db.prepare(`
+      INSERT OR REPLACE INTO memories (id, type, name, description, content, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).run(mem.id, mem.type, mem.name, mem.description ?? null, mem.content, mem.createdAt, mem.updatedAt);
+  }
+
+  deleteMemory(id: string): void {
+    this.db.prepare('DELETE FROM memories WHERE id = ?').run(id);
+  }
+
+  private mapMemory(row: Record<string, unknown>): Memory {
+    return {
+      id: row.id as string,
+      type: row.type as Memory['type'],
+      name: row.name as string,
+      description: row.description ? (row.description as string) : undefined,
+      content: row.content as string,
+      createdAt: row.created_at as number,
+      updatedAt: row.updated_at as number,
+    };
   }
 
   // ─── Mappers ──────────────────────────────────────────────────────────────

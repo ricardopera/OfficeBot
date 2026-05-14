@@ -56,6 +56,12 @@ export const IPC = {
   DIALOG_SAVE_FILE: 'dialog:save-file',
   DIALOG_OPEN_FOLDER: 'dialog:open-folder',
 
+  // ─── Memories ────────────────────────────────────────────────────────────
+  MEMORY_LIST: 'memory:list',
+  MEMORY_CREATE: 'memory:create',
+  MEMORY_UPDATE: 'memory:update',
+  MEMORY_DELETE: 'memory:delete',
+
   // ─── Shell ──────────────────────────────────────────────────────────────
   SHELL_OPEN_EXTERNAL: 'shell:open-external',
 

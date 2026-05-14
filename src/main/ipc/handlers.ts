@@ -3,7 +3,7 @@ import { dialog, shell } from 'electron';
 import { readdirSync, readFileSync, writeFileSync, unlinkSync, renameSync, mkdirSync, statSync } from 'fs';
 import { join } from 'path';
 import { IPC } from '@shared/ipc-channels';
-import type { SendMessageRequest, ApprovalResponse, AppSettings, Conversation, Message } from '@shared/types';
+import type { SendMessageRequest, ApprovalResponse, AppSettings, Conversation, Message, Memory } from '@shared/types';
 import { DEFAULT_SETTINGS } from '@shared/types';
 import type { DatabaseService } from '../services/Database';
 import type { TerminalService } from '../services/Terminal';
@@ -11,7 +11,7 @@ import { ProviderRegistry } from '../providers/registry';
 import { fetchProviderModels } from '../providers/factory';
 import { ApprovalEngine } from '../agent/ApprovalEngine';
 import { ContextManager } from '../agent/ContextManager';
-import { assembleSystemPrompt } from '../agent/SystemPrompt';
+import { assembleSystemPrompt, formatMemoriesForPrompt } from '../agent/SystemPrompt';
 import { runAgent } from '../agent/AgentLoop';
 import { createToolSet } from '../agent/tools/index';
 import { sanitizePath } from '../services/FileSystem';
@@ -96,19 +96,21 @@ export function registerIpcHandlers(
       coreMessages = contextManager.compressHistory(coreMessages);
     }
 
-    // Assemble system prompt
+    // Assemble system prompt (include user memories)
+    const memories = db.listMemories();
     const systemPrompt = assembleSystemPrompt({
       workspacePath,
       language: settings.language,
       approvalMode: settings.approvalMode,
       customInstructions: settings.customInstructions,
+      memories: formatMemoriesForPrompt(memories),
     });
 
     // Configure approval engine
     approvalEngine.setMode(settings.approvalMode, settings.approvalPolicies);
 
-    // Create tools
-    const tools = createToolSet(workspacePath, approvalEngine);
+    // Create tools (pass search API keys from settings)
+    const tools = createToolSet(workspacePath, approvalEngine, settings.tavilyApiKey, settings.braveApiKey);
 
     // AbortController for stopping
     const abortController = new AbortController();
@@ -211,6 +213,30 @@ export function registerIpcHandlers(
     } catch {
       return null;
     }
+  });
+
+  // ─── Memories ──────────────────────────────────────────────────────────────
+
+  ipcMain.handle(IPC.MEMORY_LIST, () => db.listMemories());
+
+  ipcMain.handle(IPC.MEMORY_CREATE, (_event, mem: Omit<Memory, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const id = `memory_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    const now = Date.now();
+    const full: Memory = { id, ...mem, createdAt: now, updatedAt: now };
+    db.saveMemory(full);
+    return full;
+  });
+
+  ipcMain.handle(IPC.MEMORY_UPDATE, (_event, id: string, updates: Partial<Pick<Memory, 'name' | 'description' | 'content' | 'type'>>) => {
+    const existing = db.listMemories().find((m) => m.id === id);
+    if (!existing) return { success: false };
+    db.saveMemory({ ...existing, ...updates, id, updatedAt: Date.now() });
+    return { success: true };
+  });
+
+  ipcMain.handle(IPC.MEMORY_DELETE, (_event, id: string) => {
+    db.deleteMemory(id);
+    return { success: true };
   });
 
   // ─── Providers ─────────────────────────────────────────────────────────────

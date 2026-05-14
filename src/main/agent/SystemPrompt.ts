@@ -1,5 +1,14 @@
-import type { Language, ApprovalMode } from '@shared/types';
+import type { Language, ApprovalMode, Memory } from '@shared/types';
 import { platform } from 'os';
+
+/**
+ * Formats a list of Memory records into strings for injection into the system prompt.
+ */
+export function formatMemoriesForPrompt(memories: Memory[]): string[] {
+  return memories.map((m) =>
+    m.description ? `${m.name} (${m.description}): ${m.content}` : `${m.name}: ${m.content}`
+  );
+}
 
 interface SystemPromptConfig {
   workspacePath: string;

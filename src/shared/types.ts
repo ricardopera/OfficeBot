@@ -91,6 +91,8 @@ export interface AppSettings {
   workspacePath?: string;
   customInstructions?: string;
   telemetryEnabled: boolean;
+  tavilyApiKey?: string;
+  braveApiKey?: string;
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {

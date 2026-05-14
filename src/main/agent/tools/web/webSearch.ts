@@ -1,7 +1,7 @@
 import { tool } from 'ai';
 import { z } from 'zod';
 
-export function createWebSearchTool() {
+export function createWebSearchTool(tavilyApiKey?: string, braveApiKey?: string) {
   return tool({
     description: 'Realiza uma pesquisa na web e retorna resultados relevantes.',
     parameters: z.object({
@@ -9,18 +9,18 @@ export function createWebSearchTool() {
       maxResults: z.number().optional().describe('Número máximo de resultados (padrão: 5)'),
     }),
     execute: async ({ query, maxResults = 5 }) => {
-      // Brave Search API (free tier) - requires BRAVE_SEARCH_API_KEY env var
-      const braveKey = process.env.BRAVE_SEARCH_API_KEY;
-      const tavilyKey = process.env.TAVILY_API_KEY;
+      // Prefer keys passed from settings, fall back to env vars
+      const tavily = tavilyApiKey || process.env.TAVILY_API_KEY;
+      const brave = braveApiKey || process.env.BRAVE_SEARCH_API_KEY;
 
-      if (tavilyKey) {
-        return searchWithTavily(query, maxResults, tavilyKey);
-      } else if (braveKey) {
-        return searchWithBrave(query, maxResults, braveKey);
+      if (tavily) {
+        return searchWithTavily(query, maxResults, tavily);
+      } else if (brave) {
+        return searchWithBrave(query, maxResults, brave);
       } else {
         return {
           success: false,
-          error: 'Nenhuma chave de API de pesquisa configurada. Configure TAVILY_API_KEY ou BRAVE_SEARCH_API_KEY.',
+          error: 'Nenhuma chave de API de pesquisa configurada. Configure TAVILY_API_KEY ou BRAVE_SEARCH_API_KEY nas configurações.',
           results: [],
         };
       }

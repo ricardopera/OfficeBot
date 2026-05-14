@@ -7,6 +7,7 @@ import type {
   Conversation,
   AgentStreamEvent,
   ApprovalRequest,
+  Memory,
 } from '../shared/types';
 
 // Expose a typed API to the renderer process
@@ -91,6 +92,14 @@ const api = {
 
   // ─── Shell ─────────────────────────────────────────────────────────────
   openExternal: (url: string) => ipcRenderer.invoke(IPC.SHELL_OPEN_EXTERNAL, url),
+
+  // ─── Memories ──────────────────────────────────────────────────────────
+  listMemories: () => ipcRenderer.invoke(IPC.MEMORY_LIST),
+  createMemory: (mem: Omit<Memory, 'id' | 'createdAt' | 'updatedAt'>) =>
+    ipcRenderer.invoke(IPC.MEMORY_CREATE, mem),
+  updateMemory: (id: string, updates: Partial<Pick<Memory, 'name' | 'description' | 'content' | 'type'>>) =>
+    ipcRenderer.invoke(IPC.MEMORY_UPDATE, id, updates),
+  deleteMemory: (id: string) => ipcRenderer.invoke(IPC.MEMORY_DELETE, id),
 
   // ─── App ───────────────────────────────────────────────────────────────
   getVersion: () => ipcRenderer.invoke(IPC.APP_VERSION),

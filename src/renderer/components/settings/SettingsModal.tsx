@@ -7,8 +7,10 @@ import { ApprovalSettings } from './ApprovalSettings';
 import { AppearanceSettings } from './AppearanceSettings';
 import { LanguageSettings } from './LanguageSettings';
 import { DataSettings } from './DataSettings';
+import { MemoriesSettings } from './MemoriesSettings';
+import { CustomInstructionsSettings } from './CustomInstructionsSettings';
 
-type Tab = 'provider' | 'approval' | 'appearance' | 'language' | 'data';
+type Tab = 'provider' | 'approval' | 'appearance' | 'language' | 'memories' | 'instructions' | 'data';
 
 export function SettingsModal() {
   const { t } = useTranslation();
@@ -20,6 +22,8 @@ export function SettingsModal() {
     { id: 'approval', label: t('settings.approval') },
     { id: 'appearance', label: t('settings.appearance') },
     { id: 'language', label: t('settings.language') },
+    { id: 'memories', label: t('settings.memories') },
+    { id: 'instructions', label: t('settings.customInstructions') },
     { id: 'data', label: t('settings.data') },
   ];
 
@@ -39,7 +43,7 @@ export function SettingsModal() {
 
         <div className="flex flex-1 overflow-hidden">
           {/* Sidebar tabs */}
-          <div className="w-40 border-r border-gray-200 dark:border-gray-700 py-2">
+          <div className="w-44 border-r border-gray-200 dark:border-gray-700 py-2 flex-shrink-0">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
@@ -61,6 +65,8 @@ export function SettingsModal() {
             {activeTab === 'approval' && <ApprovalSettings />}
             {activeTab === 'appearance' && <AppearanceSettings />}
             {activeTab === 'language' && <LanguageSettings />}
+            {activeTab === 'memories' && <MemoriesSettings />}
+            {activeTab === 'instructions' && <CustomInstructionsSettings />}
             {activeTab === 'data' && <DataSettings />}
           </div>
         </div>
