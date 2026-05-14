@@ -17,6 +17,7 @@ export const IPC = {
   CONV_UPDATE: 'conv:update',
   CONV_DELETE: 'conv:delete',
   CONV_MESSAGES: 'conv:messages',
+  CONV_IMPORT: 'conv:import',
 
   // ─── Providers ─────────────────────────────────────────────────────────
   PROVIDER_LIST: 'provider:list',
@@ -24,6 +25,7 @@ export const IPC = {
   PROVIDER_UPDATE: 'provider:update',
   PROVIDER_DELETE: 'provider:delete',
   PROVIDER_FETCH_MODELS: 'provider:fetch-models',
+  PROVIDER_FETCH_MODELS_DRAFT: 'provider:fetch-models-draft',
 
   // ─── Settings ──────────────────────────────────────────────────────────
   SETTINGS_GET: 'settings:get',

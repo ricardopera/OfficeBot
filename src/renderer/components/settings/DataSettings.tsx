@@ -17,6 +17,26 @@ export function DataSettings() {
     URL.revokeObjectURL(url);
   };
 
+  const handleImport = async () => {
+    const data = await window.electronAPI.importConversations();
+    if (!data || !Array.isArray(data)) return;
+
+    const now = Date.now();
+    await Promise.all(
+      (data as { id?: string; title?: string }[]).map((conv) =>
+        window.electronAPI.createConversation({
+          id: conv.id ?? `imported_${now}_${Math.random().toString(36).slice(2)}`,
+          title: conv.title ?? t('chat.newConversation'),
+          createdAt: now,
+          updatedAt: now,
+          isFavorite: false,
+          isArchived: false,
+        })
+      )
+    );
+    window.location.reload();
+  };
+
   const handleClearHistory = async () => {
     if (confirm(t('settings.clearHistoryConfirm'))) {
       const conversations = await window.electronAPI.listConversations();
@@ -38,7 +58,10 @@ export function DataSettings() {
           {t('settings.exportConversations')}
         </button>
 
-        <button className="btn-secondary w-full flex items-center justify-center gap-2">
+        <button
+          onClick={handleImport}
+          className="btn-secondary w-full flex items-center justify-center gap-2"
+        >
           <Upload size={16} />
           {t('settings.importConversations')}
         </button>

@@ -3,9 +3,11 @@ import { app } from 'electron';
 import { join } from 'path';
 import { mkdirSync } from 'fs';
 import type { Conversation, Message, AppSettings, LLMProvider } from '@shared/types';
+import { SecureStorageService } from './SecureStorage';
 
 export class DatabaseService {
   private db!: Database.Database;
+  private secure = new SecureStorageService();
 
   initialize(): void {
     const userDataPath = app.getPath('userData');
@@ -151,7 +153,7 @@ export class DatabaseService {
 
   listProviders(): LLMProvider[] {
     const rows = this.db.prepare('SELECT * FROM providers ORDER BY created_at ASC').all() as Record<string, unknown>[];
-    return rows.map(this.mapProvider);
+    return rows.map((r) => this.mapProvider(r));
   }
 
   getProvider(id: string): LLMProvider | undefined {
@@ -160,10 +162,11 @@ export class DatabaseService {
   }
 
   saveProvider(p: LLMProvider): void {
+    const encryptedKey = this.secure.encrypt(p.apiKey);
     this.db.prepare(`
       INSERT OR REPLACE INTO providers (id, name, base_url, api_key_encrypted, default_model, models, created_at)
       VALUES (?, ?, ?, ?, ?, ?, ?)
-    `).run(p.id, p.name, p.baseURL, p.apiKey, p.defaultModel ?? null, p.models ? JSON.stringify(p.models) : null, Date.now());
+    `).run(p.id, p.name, p.baseURL, encryptedKey, p.defaultModel ?? null, p.models ? JSON.stringify(p.models) : null, Date.now());
   }
 
   deleteProvider(id: string): void {
@@ -203,7 +206,7 @@ export class DatabaseService {
       id: row.id as string,
       name: row.name as string,
       baseURL: row.base_url as string,
-      apiKey: row.api_key_encrypted as string,
+      apiKey: this.secure.decrypt(row.api_key_encrypted as string),
       defaultModel: (row.default_model as string) ?? '',
       models: row.models ? JSON.parse(row.models as string) : [],
       supportsFunctionCalling: true,

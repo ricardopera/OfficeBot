@@ -1,7 +1,7 @@
 import { tool } from 'ai';
 import { z } from 'zod';
 import { readdirSync, statSync } from 'fs';
-import { join } from 'path';
+import { join, relative } from 'path';
 import { sanitizePath } from '../../../services/FileSystem';
 
 export function createListDirectoryTool(workspacePath: string) {
@@ -18,7 +18,7 @@ export function createListDirectoryTool(workspacePath: string) {
         const entries = readdirSync(dir, { withFileTypes: true });
         return entries.map((entry) => {
           const fullPath = join(dir, entry.name);
-          const rel = fullPath.replace(workspacePath + '/', '').replace(workspacePath + '\\', '');
+          const rel = relative(workspacePath, fullPath);
           const stat = statSync(fullPath);
           const item: Record<string, unknown> = {
             name: entry.name,

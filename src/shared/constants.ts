@@ -9,6 +9,9 @@ export const DEFAULT_TEMPERATURE = 0.7;
 
 export const CONTEXT_COMPRESSION_THRESHOLD = 0.8; // 80% of context window
 
+/** Fallback context window size (tokens) used when model info is unavailable. */
+export const DEFAULT_CONTEXT_WINDOW_TOKENS = 128_000;
+
 export const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
 export const MAX_TERMINAL_HISTORY = 1000;
 

@@ -1,8 +1,12 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ApprovalEngine } from '../../src/main/agent/ApprovalEngine';
 
 describe('ApprovalEngine', () => {
   const mockSend = vi.fn();
+
+  beforeEach(() => {
+    mockSend.mockReset();
+  });
 
   it('auto-approves readFile in semi-auto mode', async () => {
     const engine = new ApprovalEngine(mockSend);

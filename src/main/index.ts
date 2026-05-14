@@ -53,15 +53,19 @@ app.whenReady().then(async () => {
   db = new DatabaseService();
   db.initialize();
 
-  const terminalService = new TerminalService(mainWindow!);
+  // createWindow first so mainWindow is set before TerminalService is used
+  createWindow();
+
+  const terminalService = new TerminalService(mainWindow);
+  // Keep window reference up to date if window was recreated
+  if (mainWindow) terminalService.setWindow(mainWindow);
 
   registerIpcHandlers(ipcMain, db, terminalService, () => mainWindow);
-
-  createWindow();
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();
+      terminalService.setWindow(mainWindow!);
     }
   });
 });

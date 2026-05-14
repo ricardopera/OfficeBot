@@ -39,6 +39,7 @@ const api = {
   updateConversation: (id: string, updates: Partial<Conversation>) =>
     ipcRenderer.invoke(IPC.CONV_UPDATE, id, updates),
   deleteConversation: (id: string) => ipcRenderer.invoke(IPC.CONV_DELETE, id),
+  importConversations: () => ipcRenderer.invoke(IPC.CONV_IMPORT),
 
   // ─── Providers ─────────────────────────────────────────────────────────
   listProviders: () => ipcRenderer.invoke(IPC.PROVIDER_LIST),
@@ -47,6 +48,8 @@ const api = {
     ipcRenderer.invoke(IPC.PROVIDER_UPDATE, id, updates),
   deleteProvider: (id: string) => ipcRenderer.invoke(IPC.PROVIDER_DELETE, id),
   fetchModels: (id: string) => ipcRenderer.invoke(IPC.PROVIDER_FETCH_MODELS, id),
+  fetchModelsDraft: (baseURL: string, apiKey: string) =>
+    ipcRenderer.invoke(IPC.PROVIDER_FETCH_MODELS_DRAFT, { baseURL, apiKey }),
 
   // ─── Settings ──────────────────────────────────────────────────────────
   getSettings: () => ipcRenderer.invoke(IPC.SETTINGS_GET),

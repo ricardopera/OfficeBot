@@ -1,7 +1,5 @@
 import { tool } from 'ai';
 import { z } from 'zod';
-import { globSync } from 'fs';
-import { join } from 'path';
 import { sanitizePath } from '../../../services/FileSystem';
 
 export function createGlobTool(workspacePath: string) {

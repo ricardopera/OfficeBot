@@ -1,7 +1,7 @@
 import { tool } from 'ai';
 import { z } from 'zod';
 import { readFileSync, readdirSync, statSync } from 'fs';
-import { join, extname } from 'path';
+import { join, extname, relative } from 'path';
 import { sanitizePath } from '../../../services/FileSystem';
 import { TEXT_FILE_EXTENSIONS } from '@shared/constants';
 
@@ -66,7 +66,7 @@ export function createGrepTool(workspacePath: string) {
       // Return relative paths
       const relResults = results.map((r) => ({
         ...r,
-        file: r.file.replace(workspacePath + '/', '').replace(workspacePath + '\\', ''),
+        file: relative(workspacePath, r.file),
       }));
 
       return { results: relResults.slice(0, 200), total: relResults.length, pattern };

@@ -15,7 +15,7 @@ import { assembleSystemPrompt } from '../agent/SystemPrompt';
 import { runAgent } from '../agent/AgentLoop';
 import { createToolSet } from '../agent/tools/index';
 import { sanitizePath } from '../services/FileSystem';
-import { APP_VERSION } from '@shared/constants';
+import { APP_VERSION, DEFAULT_CONTEXT_WINDOW_TOKENS, CONTEXT_COMPRESSION_THRESHOLD } from '@shared/constants';
 import type { CoreMessage } from 'ai';
 
 const activeAgentControllers = new Map<string, AbortController>();
@@ -82,13 +82,19 @@ export function registerIpcHandlers(
     };
     db.saveMessage(userMsg);
 
-    // Prepare CoreMessages
-    const coreMessages: CoreMessage[] = [
+    // Prepare CoreMessages and compress if history is large
+    let coreMessages: CoreMessage[] = [
       ...savedMessages
         .filter((m) => m.role !== 'system')
         .map((m) => ({ role: m.role as CoreMessage['role'], content: m.content })),
       { role: 'user', content: req.message },
     ];
+
+    // Compress history when it grows large (uses default 128k token budget)
+    const estimatedTokens = contextManager.estimateTokens(coreMessages);
+    if (estimatedTokens / DEFAULT_CONTEXT_WINDOW_TOKENS >= CONTEXT_COMPRESSION_THRESHOLD) {
+      coreMessages = contextManager.compressHistory(coreMessages);
+    }
 
     // Assemble system prompt
     const systemPrompt = assembleSystemPrompt({
@@ -192,6 +198,21 @@ export function registerIpcHandlers(
     return { success: true };
   });
 
+  ipcMain.handle(IPC.CONV_IMPORT, async () => {
+    const result = await dialog.showOpenDialog(getWindow()!, {
+      title: 'Import conversations',
+      filters: [{ name: 'JSON', extensions: ['json'] }],
+      properties: ['openFile'],
+    });
+    if (result.canceled || result.filePaths.length === 0) return null;
+    try {
+      const content = readFileSync(result.filePaths[0], 'utf-8');
+      return JSON.parse(content);
+    } catch {
+      return null;
+    }
+  });
+
   // ─── Providers ─────────────────────────────────────────────────────────────
 
   ipcMain.handle(IPC.PROVIDER_LIST, () => providerRegistry.list());
@@ -203,6 +224,20 @@ export function registerIpcHandlers(
     const provider = providerRegistry.get(id);
     if (!provider) return { success: false, models: [] };
     const models = await fetchProviderModels(provider);
+    return { success: true, models };
+  });
+
+  ipcMain.handle(IPC.PROVIDER_FETCH_MODELS_DRAFT, async (_event, draft: { baseURL: string; apiKey: string }) => {
+    const models = await fetchProviderModels({
+      id: 'draft',
+      name: 'draft',
+      baseURL: draft.baseURL,
+      apiKey: draft.apiKey,
+      defaultModel: '',
+      models: [],
+      supportsFunctionCalling: true,
+      supportsStreaming: true,
+    });
     return { success: true, models };
   });
 

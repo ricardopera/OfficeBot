@@ -30,7 +30,9 @@ export function AppShell() {
       }
     };
     init();
-  }, []);
+    // Zustand action functions are stable references — listing them satisfies
+    // exhaustive-deps without causing re-runs.
+  }, [loadSettings, loadProviders, loadConversations, setWorkspacePath, loadFileTree]);
 
   // Register stream event listener
   useEffect(() => {

@@ -55,15 +55,16 @@ export function ProviderSettings() {
   };
 
   const handleFetchModels = async () => {
+    if (!form.baseURL || !form.apiKey) return;
     setFetchingModels(true);
     try {
-      // Create temp provider to fetch models
-      const tempProvider = { id: 'temp', ...form, models: [], supportsFunctionCalling: true, supportsStreaming: true };
-      // We need to save it first or use the existing ID
+      let result: { success: boolean; models: { id: string; name: string }[] };
       if (editId) {
-        const result = await window.electronAPI.fetchModels(editId);
-        if (result.success) setFetchedModels(result.models);
+        result = await window.electronAPI.fetchModels(editId);
+      } else {
+        result = await window.electronAPI.fetchModelsDraft(form.baseURL, form.apiKey);
       }
+      if (result.success) setFetchedModels(result.models);
     } finally {
       setFetchingModels(false);
     }
@@ -207,16 +208,14 @@ export function ProviderSettings() {
             >
               {t('common.cancel')}
             </button>
-            {editId && (
-              <button
-                onClick={handleFetchModels}
-                disabled={fetchingModels}
-                className="btn-secondary text-xs flex items-center gap-1 ml-auto"
-              >
-                <RefreshCw size={12} className={fetchingModels ? 'animate-spin' : ''} />
-                {fetchingModels ? t('settings.fetchingModels') : t('settings.fetchModels')}
-              </button>
-            )}
+            <button
+              onClick={handleFetchModels}
+              disabled={fetchingModels || !form.baseURL || !form.apiKey}
+              className="btn-secondary text-xs flex items-center gap-1 ml-auto"
+            >
+              <RefreshCw size={12} className={fetchingModels ? 'animate-spin' : ''} />
+              {fetchingModels ? t('settings.fetchingModels') : t('settings.fetchModels')}
+            </button>
           </div>
         </div>
       )}
