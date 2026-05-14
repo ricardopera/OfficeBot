@@ -67,7 +67,7 @@ export function ApprovalSettings() {
       {/* Custom policies */}
       {settings.approvalMode === 'custom' && (
         <div>
-          <h4 className="font-medium text-sm mb-3">Políticas por ferramenta</h4>
+          <h4 className="font-medium text-sm mb-3">{t('settings.custom')}</h4>
           <div className="space-y-1">
             {Object.values(TOOL_NAMES).map((toolName) => (
               <label key={toolName} className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-800">

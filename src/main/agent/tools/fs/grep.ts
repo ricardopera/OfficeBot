@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { readFileSync, readdirSync, statSync } from 'fs';
 import { join, extname } from 'path';
 import { sanitizePath } from '../../../services/FileSystem';
+import { TEXT_FILE_EXTENSIONS } from '@shared/constants';
 
 function grepDir(
   dir: string,
@@ -18,8 +19,7 @@ function grepDir(
       }
     } else {
       const ext = extname(entry.name).toLowerCase();
-      const textExts = ['.ts', '.tsx', '.js', '.jsx', '.json', '.md', '.txt', '.csv', '.py', '.java', '.cs', '.html', '.css', '.yaml', '.yml'];
-      if (textExts.includes(ext)) {
+      if (TEXT_FILE_EXTENSIONS.includes(ext)) {
         try {
           const content = readFileSync(fullPath, 'utf-8');
           const lines = content.split('\n');

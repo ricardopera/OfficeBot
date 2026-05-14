@@ -37,7 +37,7 @@ export function EditorTabs() {
               onClick={(e) => {
                 e.stopPropagation();
                 if (file.isDirty) {
-                  if (confirm(`Salvar "${name}" antes de fechar?`)) {
+                  if (confirm(t('editor.unsaved'))) {
                     handleSave(file.path);
                   }
                 }

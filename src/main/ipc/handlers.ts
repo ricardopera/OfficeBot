@@ -15,6 +15,7 @@ import { assembleSystemPrompt } from '../agent/SystemPrompt';
 import { runAgent } from '../agent/AgentLoop';
 import { createToolSet } from '../agent/tools/index';
 import { sanitizePath } from '../services/FileSystem';
+import { APP_VERSION } from '@shared/constants';
 import type { CoreMessage } from 'ai';
 
 const activeAgentControllers = new Map<string, AbortController>();
@@ -36,7 +37,7 @@ export function registerIpcHandlers(
   // ─── App ─────────────────────────────────────────────────────────────────
 
   ipcMain.handle(IPC.APP_VERSION, () => {
-    return require('../../package.json').version ?? '1.0.0';
+    return APP_VERSION;
   });
 
   // ─── Agent ───────────────────────────────────────────────────────────────

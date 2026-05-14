@@ -114,7 +114,7 @@ export function ProviderSettings() {
                       : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-600'
                   }`}
                 >
-                  {settings.activeProviderId === p.id ? '✓ Ativo' : 'Ativar'}
+                  {settings.activeProviderId === p.id ? `✓ ${t('common.ok')}` : t('common.confirm')}
                 </button>
                 <button onClick={() => handleEdit(p)} className="btn-secondary text-xs py-1 px-2">
                   Editar

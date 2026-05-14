@@ -57,7 +57,7 @@ export function ToolCallCard({ toolCall }: ToolCallCardProps) {
 
           {toolCall.error && (
             <div>
-              <span className="text-red-500 uppercase tracking-wide">Erro</span>
+              <span className="text-red-500 uppercase tracking-wide">{t('common.error')}</span>
               <pre className="mt-1 text-red-600 dark:text-red-400 whitespace-pre-wrap">{toolCall.error}</pre>
             </div>
           )}

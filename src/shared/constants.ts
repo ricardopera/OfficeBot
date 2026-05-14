@@ -52,6 +52,13 @@ export const SUPPORTED_FILE_TYPES = [
   '.html', '.css', '.yaml', '.yml', '.toml', '.env'
 ];
 
+export const TEXT_FILE_EXTENSIONS = [
+  '.ts', '.tsx', '.js', '.jsx', '.json', '.md', '.txt', '.csv',
+  '.py', '.java', '.cs', '.html', '.css', '.yaml', '.yml', '.toml',
+  '.sh', '.bash', '.xml', '.sql', '.rs', '.go', '.rb', '.php',
+  '.c', '.cpp', '.h', '.hpp', '.swift', '.kt', '.r', '.env',
+];
+
 export const DANGEROUS_BASH_PATTERNS = [
   /rm\s+-rf\s+\//,
   /sudo\s/,

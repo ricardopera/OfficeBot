@@ -54,7 +54,7 @@ function SearchPanel() {
         placeholder={t('common.search')}
         className="input-field"
       />
-      <p className="text-xs text-gray-500 mt-2 text-center">Busca em conversas em breve</p>
+      <p className="text-xs text-gray-500 mt-2 text-center">{t('files.search')}</p>
     </div>
   );
 }

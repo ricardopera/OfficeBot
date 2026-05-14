@@ -39,7 +39,7 @@ export function ChatPanel() {
 
     const activeProvider = providers.find((p) => p.id === settings.activeProviderId);
     if (!activeProvider) {
-      alert('Configure um provedor de IA nas configurações primeiro.');
+      alert(t('settings.noProviders'));
       return;
     }
 
