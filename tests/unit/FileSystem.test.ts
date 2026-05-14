@@ -24,4 +24,14 @@ describe('FileSystem.sanitizePath', () => {
     const result = sanitizePath('/workspace', '.');
     expect(result).toBe('/workspace');
   });
+
+  it('throws for sibling directory that shares the same prefix', () => {
+    // "/workspaceFoo" must not be considered inside "/workspace"
+    expect(() => sanitizePath('/workspace', '/workspaceFoo/secret.txt')).toThrow('fora do workspace');
+  });
+
+  it('allows deeply nested path', () => {
+    const result = sanitizePath('/workspace', 'a/b/c/deep.ts');
+    expect(result).toBe('/workspace/a/b/c/deep.ts');
+  });
 });

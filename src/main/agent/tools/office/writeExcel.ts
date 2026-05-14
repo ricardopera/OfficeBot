@@ -1,6 +1,6 @@
 import { tool } from 'ai';
 import { z } from 'zod';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 import { dirname } from 'path';
 import { mkdirSync } from 'fs';
 import { sanitizePath } from '../../../services/FileSystem';
@@ -22,12 +22,18 @@ export function createWriteExcelTool(workspacePath: string, approval: ApprovalEn
       const safePath = sanitizePath(workspacePath, filePath);
       mkdirSync(dirname(safePath), { recursive: true });
 
-      const wb = XLSX.utils.book_new();
-      const data = [headers, ...rows];
-      const ws = XLSX.utils.aoa_to_sheet(data);
-      XLSX.utils.book_append_sheet(wb, ws, sheetName);
-      XLSX.writeFile(wb, safePath);
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet(sheetName);
 
+      // Add headers as first row with bold formatting
+      worksheet.addRow(headers).font = { bold: true };
+
+      // Add data rows
+      for (const row of rows) {
+        worksheet.addRow(row as ExcelJS.CellValue[]);
+      }
+
+      await workbook.xlsx.writeFile(safePath);
       return { success: true, path: filePath, rows: rows.length, sheets: [sheetName] };
     },
   });

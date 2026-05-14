@@ -1,6 +1,6 @@
 import { tool } from 'ai';
 import { z } from 'zod';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 import { sanitizePath } from '../../../services/FileSystem';
 
 export function createReadExcelTool(workspacePath: string) {
@@ -13,27 +13,37 @@ export function createReadExcelTool(workspacePath: string) {
     }),
     execute: async ({ filePath, sheetName, maxRows = 1000 }) => {
       const safePath = sanitizePath(workspacePath, filePath);
-      const workbook = XLSX.readFile(safePath);
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.readFile(safePath);
 
-      const sheet = sheetName
-        ? workbook.Sheets[sheetName]
-        : workbook.Sheets[workbook.SheetNames[0]];
+      const worksheet = sheetName
+        ? workbook.getWorksheet(sheetName)
+        : workbook.worksheets[0];
 
-      if (!sheet) {
+      if (!worksheet) {
         return { success: false, error: `Aba "${sheetName}" não encontrada` };
       }
 
-      const rows: unknown[][] = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-      const limited = rows.slice(0, maxRows);
+      const sheetNames = workbook.worksheets.map((ws) => ws.name);
+      const allRows: unknown[][] = [];
+
+      worksheet.eachRow({ includeEmpty: true }, (row) => {
+        if (allRows.length < maxRows) {
+          allRows.push(row.values.slice(1) as unknown[]); // ExcelJS row.values is 1-indexed; slice(1) drops the leading undefined at index 0
+        }
+      });
+
+      const headers = allRows[0] ?? [];
+      const rows = allRows.slice(1);
 
       return {
         success: true,
-        sheetName: sheetName ?? workbook.SheetNames[0],
-        sheets: workbook.SheetNames,
-        headers: limited[0] ?? [],
-        rows: limited.slice(1),
-        totalRows: rows.length,
-        returned: limited.length,
+        sheetName: worksheet.name,
+        sheets: sheetNames,
+        headers,
+        rows,
+        totalRows: worksheet.rowCount,
+        returned: allRows.length,
       };
     },
   });
