@@ -35,7 +35,7 @@
 ### Windows
 
 1. Acesse a [página de releases](https://github.com/ricardopera/OfficeBot/releases/latest)
-2. Baixe o arquivo **`OfficeBot-Setup-x.x.x.exe`** (instalador NSIS) ou **`OfficeBot-x.x.x.msi`**
+2. Baixe o arquivo **`OfficeBot-Setup-X.X.X.exe`** (instalador NSIS) ou **`OfficeBot-X.X.X.msi`**
 3. Execute o instalador e siga as instruções
 4. Inicie o OfficeBot pelo menu Iniciar ou atalho na área de trabalho
 
@@ -44,14 +44,14 @@
 #### AppImage (recomendado — qualquer distribuição)
 
 ```bash
-chmod +x OfficeBot-x.x.x.AppImage
-./OfficeBot-x.x.x.AppImage
+chmod +x OfficeBot-X.X.X.AppImage
+./OfficeBot-X.X.X.AppImage
 ```
 
 #### Debian / Ubuntu (.deb)
 
 ```bash
-sudo dpkg -i officebot_x.x.x_amd64.deb
+sudo dpkg -i OfficeBot-*.deb
 sudo apt-get install -f   # instala dependências faltantes, se necessário
 officebot
 ```
