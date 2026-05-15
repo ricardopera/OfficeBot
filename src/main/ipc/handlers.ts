@@ -20,6 +20,17 @@ import type { CoreMessage } from 'ai';
 
 const activeAgentControllers = new Map<string, AbortController>();
 
+function toCoreMessage(role: string, content: string): CoreMessage | null {
+  switch (role) {
+    case 'user':
+      return { role: 'user', content };
+    case 'assistant':
+      return { role: 'assistant', content };
+    default:
+      return null;
+  }
+}
+
 export function registerIpcHandlers(
   ipcMain: IpcMain,
   db: DatabaseService,
@@ -85,8 +96,8 @@ export function registerIpcHandlers(
     // Prepare CoreMessages and compress if history is large
     let coreMessages: CoreMessage[] = [
       ...savedMessages
-        .filter((m) => m.role !== 'system')
-        .map((m) => ({ role: m.role as CoreMessage['role'], content: m.content })),
+        .map((m) => toCoreMessage(m.role, m.content))
+        .filter((m): m is CoreMessage => m !== null),
       { role: 'user', content: req.message },
     ];
 

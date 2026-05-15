@@ -1,4 +1,4 @@
-import { generateText, streamText, type CoreMessage, type ToolSet, type StepResult } from 'ai';
+import { streamText, type CoreMessage, type ToolSet } from 'ai';
 import { createProviderInstance } from '../providers/factory';
 import type { LLMProvider } from '../providers/types';
 import type { AgentStreamEvent } from '@shared/types';
@@ -32,6 +32,12 @@ export async function runAgent(opts: AgentRunOptions): Promise<void> {
 
   const aiProvider = createProviderInstance(provider);
   const model = aiProvider(modelId);
+  type StreamToolResult = {
+    toolCallId: string;
+    toolName: string;
+    args: unknown;
+    result: unknown;
+  };
 
   try {
     const result = streamText({
@@ -44,7 +50,7 @@ export async function runAgent(opts: AgentRunOptions): Promise<void> {
       onStepFinish: (step) => {
         // Emit tool call results
         if (step.toolResults && step.toolResults.length > 0) {
-          for (const tr of step.toolResults) {
+          for (const tr of step.toolResults as StreamToolResult[]) {
             onEvent({
               type: 'tool_result',
               conversationId,
@@ -76,7 +82,14 @@ export async function runAgent(opts: AgentRunOptions): Promise<void> {
     });
 
     // Stream tool calls as they start
-    for await (const chunk of result.fullStream) {
+    for await (const chunk of result.fullStream as AsyncIterable<{
+      type: string;
+      textDelta?: string;
+      error?: unknown;
+      toolCallId?: string;
+      toolName?: string;
+      args?: unknown;
+    }>) {
       if (signal?.aborted) break;
 
       switch (chunk.type) {
@@ -90,6 +103,7 @@ export async function runAgent(opts: AgentRunOptions): Promise<void> {
           break;
 
         case 'tool-call':
+          if (!chunk.toolCallId || !chunk.toolName) break;
           onEvent({
             type: 'tool_start',
             conversationId,
@@ -100,22 +114,6 @@ export async function runAgent(opts: AgentRunOptions): Promise<void> {
               args: chunk.args as Record<string, unknown>,
               status: 'running',
               startedAt: Date.now(),
-            },
-          });
-          break;
-
-        case 'tool-result':
-          onEvent({
-            type: 'tool_result',
-            conversationId,
-            messageId,
-            toolCall: {
-              id: chunk.toolCallId,
-              name: chunk.toolName,
-              args: chunk.args as Record<string, unknown>,
-              result: chunk.result,
-              status: 'done',
-              finishedAt: Date.now(),
             },
           });
           break;

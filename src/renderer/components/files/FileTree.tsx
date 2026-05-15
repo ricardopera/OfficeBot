@@ -45,7 +45,12 @@ export function FileTree() {
         <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide truncate">
           {workspacePath.split('/').pop()}
         </span>
-        <button onClick={loadFileTree} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded">
+        <button
+          onClick={() => {
+            void loadFileTree();
+          }}
+          className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded"
+        >
           <FolderOpen size={12} />
         </button>
       </div>
