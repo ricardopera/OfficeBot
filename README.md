@@ -205,6 +205,22 @@ Por favor, certifique-se de que os testes passam (`npm test`) antes de submeter.
 
 ---
 
+## 🏷️ Publicando a primeira release
+
+O workflow de release (`.github/workflows/release.yml`) publica automaticamente os instaladores de Windows e Linux quando uma tag semântica é enviada.
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+Após o push da tag:
+- Será executado build em `ubuntu-latest` (AppImage + .deb)
+- Será executado build em `windows-latest` (.exe + .msi)
+- Os artefatos serão anexados automaticamente na Release `v1.0.0`
+
+---
+
 ## 📄 Licença
 
 Distribuído sob a licença **MIT**. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.

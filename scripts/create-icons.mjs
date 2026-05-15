@@ -21,10 +21,27 @@ const svgIcon = `
 </svg>
 `;
 
-const pngBuffer = await sharp(Buffer.from(svgIcon)).png().toBuffer();
+const pngBuffer = await sharp(Buffer.from(svgIcon)).resize(256, 256).png().toBuffer();
+
+const icoHeader = Buffer.alloc(6);
+icoHeader.writeUInt16LE(0, 0); // reserved
+icoHeader.writeUInt16LE(1, 2); // type: icon
+icoHeader.writeUInt16LE(1, 4); // image count
+
+const icoDirectoryEntry = Buffer.alloc(16);
+icoDirectoryEntry.writeUInt8(0, 0); // width 256 -> 0
+icoDirectoryEntry.writeUInt8(0, 1); // height 256 -> 0
+icoDirectoryEntry.writeUInt8(0, 2); // color count
+icoDirectoryEntry.writeUInt8(0, 3); // reserved
+icoDirectoryEntry.writeUInt16LE(1, 4); // color planes
+icoDirectoryEntry.writeUInt16LE(32, 6); // bits per pixel
+icoDirectoryEntry.writeUInt32LE(pngBuffer.length, 8); // image size
+icoDirectoryEntry.writeUInt32LE(22, 12); // image offset (6 + 16)
+
+const icoBuffer = Buffer.concat([icoHeader, icoDirectoryEntry, pngBuffer]);
 
 await mkdir(resourcesDir, { recursive: true });
 await writeFile(iconPngPath, pngBuffer);
-await writeFile(iconIcoPath, pngBuffer);
+await writeFile(iconIcoPath, icoBuffer);
 
 console.log(`Generated ${iconPngPath} and ${iconIcoPath}`);
