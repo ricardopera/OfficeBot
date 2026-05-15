@@ -1,3 +1,8 @@
+# Environment (API keys, secrets)
+.env
+.env.local
+.env.*.local
+
 # Reversa
 .reversa/config.user.toml
 _reversa_sdd/
