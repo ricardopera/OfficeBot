@@ -1,0 +1,11 @@
+export { ExtensionManifestSchema } from './ExtensionManifest.js';
+export type { ExtensionManifest, LoadedExtension, ExtensionState, ExtensionStatus, ExtensionError } from './ExtensionManifest.js';
+export { ExtensionLoader } from './ExtensionLoader.js';
+export { ExtensionRegistry } from './ExtensionRegistry.js';
+export { LifecycleManager } from './LifecycleManager.js';
+export { SandboxWorker, createSandbox } from './SandboxWorker.js';
+export { HubInstaller } from './HubInstaller.js';
+export { HubIndexManager } from './HubIndexManager.js';
+export * from './lifecycle/index.js';
+export * from './sandbox/index.js';
+export * from './hub/index.js';

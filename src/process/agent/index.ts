@@ -1,0 +1,11 @@
+export { AgentRegistry } from './AgentRegistry';
+export { CliDetector } from './CliDetector';
+export { AcpDetector } from './AcpDetector';
+export { GeminiAgent } from './GeminiAgent';
+export { AionrsAgent } from './AionrsAgent';
+export { OpenClawGateway } from './OpenClawGateway';
+export { NanobotConnection } from './NanobotConnection';
+export { RemoteAgentCore } from './RemoteAgentCore';
+export type { AgentBackend, DetectedAgent, IAgentRegistry, ICliDetector } from './types';
+export type { NanobotConfig } from './NanobotConnection';
+export type { RemoteAgentConfig } from './RemoteAgentCore';
