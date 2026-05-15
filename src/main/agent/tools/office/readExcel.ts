@@ -29,7 +29,8 @@ export function createReadExcelTool(workspacePath: string) {
 
       worksheet.eachRow({ includeEmpty: true }, (row) => {
         if (allRows.length < maxRows) {
-          allRows.push(row.values.slice(1) as unknown[]); // ExcelJS row.values is 1-indexed; slice(1) drops the leading undefined at index 0
+          const values = Array.isArray(row.values) ? row.values.slice(1) : [];
+          allRows.push(values as unknown[]); // ExcelJS row.values is 1-indexed; slice(1) drops the leading undefined at index 0
         }
       });
 

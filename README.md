@@ -128,6 +128,14 @@ npm run package:linux   # Linux: AppImage + .deb
 npm run package:win     # Windows: .exe + .msi  (execute em Windows)
 ```
 
+### CI e Artefatos
+
+- O workflow **CI** valida `lint`, `typecheck`, `test` e `build`
+- Em pushes para branches do repositório, o CI também gera artefatos de instalação:
+  - `officebot-linux-installers`
+  - `officebot-windows-installers`
+- Os artefatos ficam disponíveis na aba **Actions** da execução correspondente
+
 ### Gerando Ícones
 
 Os ícones são gerados automaticamente antes do empacotamento:

@@ -19,14 +19,18 @@ const api = {
   onStreamEvent: (callback: (event: AgentStreamEvent) => void) => {
     const listener = (_: Electron.IpcRendererEvent, event: AgentStreamEvent) => callback(event);
     ipcRenderer.on(IPC.AGENT_STREAM_EVENT, listener);
-    return () => ipcRenderer.removeListener(IPC.AGENT_STREAM_EVENT, listener);
+    return () => {
+      ipcRenderer.removeListener(IPC.AGENT_STREAM_EVENT, listener);
+    };
   },
 
   // ─── Approval ──────────────────────────────────────────────────────────
   onApprovalRequest: (callback: (req: ApprovalRequest) => void) => {
     const listener = (_: Electron.IpcRendererEvent, req: ApprovalRequest) => callback(req);
     ipcRenderer.on(IPC.APPROVAL_REQUEST, listener);
-    return () => ipcRenderer.removeListener(IPC.APPROVAL_REQUEST, listener);
+    return () => {
+      ipcRenderer.removeListener(IPC.APPROVAL_REQUEST, listener);
+    };
   },
 
   respondApproval: (response: ApprovalResponse) =>
@@ -82,7 +86,9 @@ const api = {
     const listener = (_: Electron.IpcRendererEvent, data: { id: string; data: string }) =>
       callback(data);
     ipcRenderer.on(IPC.TERMINAL_OUTPUT, listener);
-    return () => ipcRenderer.removeListener(IPC.TERMINAL_OUTPUT, listener);
+    return () => {
+      ipcRenderer.removeListener(IPC.TERMINAL_OUTPUT, listener);
+    };
   },
 
   // ─── Dialog ────────────────────────────────────────────────────────────

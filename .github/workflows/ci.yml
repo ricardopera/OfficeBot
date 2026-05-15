@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -50,3 +50,70 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  package-linux:
+    if: github.event_name == 'push'
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            python3 \
+            pkg-config \
+            libcairo2-dev \
+            libpango1.0-dev \
+            libjpeg-dev \
+            libgif-dev \
+            librsvg2-dev \
+            libpixman-1-dev \
+            libsecret-1-dev
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Build Linux installers
+        run: npm run package:linux
+
+      - name: Upload Linux installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: officebot-linux-installers
+          path: release/*
+
+  package-windows:
+    if: github.event_name == 'push'
+    needs: validate
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Build Windows installers
+        run: npm run package:win
+
+      - name: Upload Windows installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: officebot-windows-installers
+          path: release/*

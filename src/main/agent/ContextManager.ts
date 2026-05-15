@@ -46,14 +46,15 @@ export class ContextManager {
     const compressed: CoreMessage[] = [];
 
     for (const msg of messages) {
-      let content = msg.content;
-
-      // Truncate large tool results
-      if (typeof content === 'string' && content.length > 5000) {
-        content = content.slice(0, 5000) + '\n... [conteúdo truncado para economizar contexto]';
+      if (msg.role !== 'tool' && typeof msg.content === 'string' && msg.content.length > 5000) {
+        compressed.push({
+          ...msg,
+          content: msg.content.slice(0, 5000) + '\n... [conteúdo truncado para economizar contexto]',
+        });
+        continue;
       }
 
-      compressed.push({ ...msg, content });
+      compressed.push(msg);
     }
 
     // If still too many messages, keep system prompt + last MAX_KEEP
