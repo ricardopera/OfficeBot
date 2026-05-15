@@ -1,9 +1,13 @@
 # 🤖 OfficeBot
 
+<p align="center">
+  <img src="assets/logo.png" alt="OfficeBot Logo" width="200"/>
+</p>
+
 > **Desktop AI Agent** — Multi-plataforma, multilíngue, extensible
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Electron](https://img.shields.io/badge/Electron-2.0.0+- informativa?logo=electron)](https://www.electronjs.org/)
+[![Electron](https://img.shields.io/badge/Electron-2.0.0+-informativa?logo=electron)](https://www.electronjs.org/)
 [![React](https://img.shields.io/badge/React-18.x-61dafb?logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178c6?logo=typescript)](https://www.typescriptlang.org/)
 [![Node](https://img.shields.io/badge/Node-20.x-success?logo=node)](https://nodejs.org/)
@@ -21,6 +25,7 @@
 ## ✨ Funcionalidades Principais
 
 ### 🤖 Agentes Inteligentes
+<img src="assets/icon-agent.png" align="right" width="64"/>
 
 - **6+ engines de IA** integradas: Gemini, Claude (Codex), AionRS, OpenClaw Gateway, Nanobot, Agentes Remote
 - **ACP Protocol** — JSON-RPC com FSM de 7 estados para sessões robustas
@@ -28,6 +33,7 @@
 - **Permission Cache** LRU com 500 entradas para respostas instantâneas
 
 ### 💬 Canais de Mensageria
+<img src="assets/icon-channels.png" align="right" width="64"/>
 
 | Plataforma | Status | Features |
 |---|---|---|
@@ -42,6 +48,7 @@
 - **Deduplicação** de eventos com cache 5min
 
 ### 👥 Team Mode
+<img src="assets/icon-team.png" align="right" width="64"/>
 
 - Colaboração multi-agente com líder e teammates
 - **Mailbox** para mensagens assíncronas
@@ -50,6 +57,7 @@
 - Workspace modes: `shared` ou `isolated`
 
 ### 🧩 Sistema de Extensões
+<img src="assets/icon-extensions.png" align="right" width="64"/>
 
 - **Sandbox** isolado com Worker Threads
 - **Hub** marketplace para descoberta
@@ -58,6 +66,7 @@
 - Lifecycle completo: install → activate → deactivate → uninstall
 
 ### 🗄️ Database
+<img src="assets/icon-database.png" align="right" width="64"/>
 
 - **SQLite** com WAL mode para concorrência
 - **13 tabelas** com repositories especializados
@@ -74,6 +83,7 @@
 - bcrypt constant-time
 
 ### 🎨 UI (Renderer)
+<img src="assets/icon-security.png" align="right" width="64"/>
 
 - React 18 com hooks customizados
 - **21 telas** em modo literal
@@ -116,6 +126,26 @@ OfficeBot/
 
 - **OO com DI:** Repository Pattern, Bridge Pattern, Host Pattern
 - **Event-driven:** 14 FSMs, EventEmitter para pub/sub, IPC com providers e emitters
+
+---
+
+## 🎨 Assets
+
+<p align="center">
+  <img src="assets/hero.png" alt="OfficeBot Hero" width="100%"/>
+</p>
+
+| Asset | Descrição |
+|---|---|
+| [`assets/logo.png`](assets/logo.png) | Logo do app (1024x1024) |
+| [`assets/banner.png`](assets/banner.png) | Banner para redes sociais (1920x1080) |
+| [`assets/hero.png`](assets/hero.png) | Ilustração hero do produto |
+| [`assets/icon-agent.png`](assets/icon-agent.png) | Ícone: Agentes AI |
+| [`assets/icon-channels.png`](assets/icon-channels.png) | Ícone: Canais de mensageria |
+| [`assets/icon-team.png`](assets/icon-team.png) | Ícone: Colaboração em equipe |
+| [`assets/icon-extensions.png`](assets/icon-extensions.png) | Ícone: Sistema de extensões |
+| [`assets/icon-database.png`](assets/icon-database.png) | Ícone: Banco de dados |
+| [`assets/icon-security.png`](assets/icon-security.png) | Ícone: Segurança |
 
 ---
 
